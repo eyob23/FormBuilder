@@ -1,34 +1,6 @@
 import { useCallback } from "react";
 import * as yup from "yup";
-// firstName: "smith",
-// lastName: "Joe",
-// sex: "male",
-// description: "initial Description",
-// food: ["salad", "pasta"],
-// color: "red",
-// detialDescription: "This is more information",
-// nested: [
-//   {
-//     firstName: "smith nested",
-//     lastName: "Joe nested",
-//     sex: "male",
-//     description: "initial Description  nested",
-//     food: ["salad", "pasta"],
-//     color: "red",
-//     detialDescription: "This is more information  nested",
-//     nested2: [
-//       {
-//         firstName: "smith nested2",
-//         lastName: "Joe nested2",
-//         sex: "male",
-//         description: "initial Description  nested2",
-//         food: ["salad", "pasta"],
-//         color: "red",
-//         detialDescription: "This is more information  nested2"
-//       }
-//     ]
-//   }
-// ]
+
 yup.addMethod(yup.array, "arrayNumber", function (errorMessage) {
   return this.test(`array-number`, errorMessage, function (value) {
     const { path, createError } = this;
@@ -50,7 +22,17 @@ export const validationSchema = yup.object({
       sex: yup.string().required("Required"),
       description: yup.string().required("Required"),
       color: yup.string().required("Required"),
-      food: yup.array().arrayNumber("Required at least one food iteam")
+      food: yup.array().arrayNumber("Required at least one food iteam"),
+      nested2: yup.array().of(
+        yup.object({
+          firstName: yup.string().required("Required"),
+          lastName: yup.string().required("Required"),
+          sex: yup.string().required("Required"),
+          description: yup.string().required("Required"),
+          color: yup.string().required("Required"),
+          food: yup.array().arrayNumber("Required at least one food iteam")
+        })
+      )
     })
   )
 });
