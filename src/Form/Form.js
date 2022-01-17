@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   useForm,
   useController,
@@ -9,6 +9,23 @@ import {
 import { ErrorMessage } from "@hookform/error-message";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+export function ErrorCounter({ resolver, data }) {
+  const [count, setCount] = useState(0);
+  const getErrorCount = (data) => {
+    resolver(data).then((e) => {
+      setCount(Object.keys(e.errors).length | 0);
+      console.log({
+        values: e.values,
+        errors: e.errors,
+        errorCount: Object.keys(e.errors).length | 0
+      });
+    });
+  };
+  useEffect(() => {
+    getErrorCount(data);
+  }, [data]);
+  return <div>Error count {count}</div>;
+}
 export default function Form({
   defaultValues,
   children,
@@ -26,12 +43,22 @@ export default function Form({
   const watchAll = useWatch({
     control
   });
+  //error from RHF
   console.log(formState.errors);
+  //error count info outside of RHF(manual check data and error)
+  // resolver(watchAll).then((e) =>
+  //   console.log({
+  //     values: e.values,
+  //     errors: e.errors,
+  //     errorCount: Object.keys(e.errors).length | 0
+  //   })
+  // );
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
         <pre>{JSON.stringify(watchAll, null, 2)}</pre>
       </div>
+      <ErrorCounter resolver={resolver} data={watchAll} />
       <Fields
         dataSchema={dataSchema}
         register={register}
