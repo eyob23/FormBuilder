@@ -11,7 +11,7 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 export function ErrorCounter({ resolver, data }) {
   const [count, setCount] = useState(0);
-  const getErrorCount = (data) => {
+  useEffect(() => {
     resolver(data).then((e) => {
       setCount(Object.keys(e.errors).length | 0);
       console.log({
@@ -20,10 +20,7 @@ export function ErrorCounter({ resolver, data }) {
         errorCount: Object.keys(e.errors).length | 0
       });
     });
-  };
-  useEffect(() => {
-    getErrorCount(data);
-  }, [data]);
+  }, [data, resolver]);
   return <div>Error count {count}</div>;
 }
 export default function Form({
@@ -35,7 +32,6 @@ export default function Form({
   validationSchema
 }) {
   const resolver = useYupValidationResolver(validationSchema);
-  // const { handleSubmit, register } = useForm({ resolver });
   const { handleSubmit, register, control, formState } = useForm({
     defaultValues,
     resolver
