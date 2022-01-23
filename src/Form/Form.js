@@ -41,14 +41,7 @@ export default function Form({
   });
   //error from RHF
   console.log(formState.errors);
-  //error count info outside of RHF(manual check data and error)
-  // resolver(watchAll).then((e) =>
-  //   console.log({
-  //     values: e.values,
-  //     errors: e.errors,
-  //     errorCount: Object.keys(e.errors).length | 0
-  //   })
-  // );
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
@@ -120,6 +113,17 @@ export const Field = (props) => {
             formState={formState}
           />
         );
+      case "object":
+        return (
+          <FieldObject
+            register={props.register}
+            name={schema.name}
+            options={schema.option}
+            array={schema.array}
+            control={control}
+            formState={formState}
+          />
+        );
       case "editor":
         return (
           <Editor
@@ -151,10 +155,7 @@ export const Field = (props) => {
     : null;
   return (
     <>
-      <div style={{ ...style }}>
-        {/* {console.log(`${schema.name}`, errors[`${schema.name}`], style)} */}
-        {renderFieldType()}
-      </div>
+      <div style={{ ...style }}>{renderFieldType()}</div>
       <ErrorMessage
         errors={errors}
         name={schema.name}
@@ -266,6 +267,36 @@ export function FieldArray({
       >
         Add new {name}
       </button>
+    </div>
+  );
+}
+export function FieldObject({
+  register,
+  options,
+  name,
+  control,
+  array,
+  formState,
+  ...rest
+}) {
+  return (
+    <div style={{ padding: "1rem" }}>
+      <div
+        style={{ border: "1px solid black", padding: "1rem", margin: "1rem" }}
+      >
+        <div>
+          <pre>{JSON.stringify(array, null, 2)}</pre>
+          <Fields
+            dataSchema={array.map((schema) => ({
+              ...schema,
+              name: `${name}.${schema.name}`
+            }))}
+            register={register}
+            control={control}
+            formState={formState}
+          />
+        </div>
+      </div>
     </div>
   );
 }

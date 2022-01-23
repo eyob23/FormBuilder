@@ -14,7 +14,8 @@ interface FieldItem {
     | "checkbox"
     | "radio"
     | "editor"
-    | "array";
+    | "array"
+    | "object";
   option?: Array<string>;
   array?: Array<FieldItem>;
 }
@@ -27,6 +28,10 @@ interface FormData {
   food: Array<string>;
   color: string;
   detialDescription: string;
+  fullName: {
+    firstName: string;
+    lastName: string;
+  };
   nested: [
     {
       firstName: string;
@@ -36,6 +41,10 @@ interface FormData {
       food: Array<string>;
       color: string;
       detialDescription: string;
+      fullName: {
+        firstName: string;
+        lastName: string;
+      };
       nested2: [
         {
           firstName: string;
@@ -45,6 +54,10 @@ interface FormData {
           food: Array<string>;
           color: string;
           detialDescription: string;
+          fullName: {
+            firstName: string;
+            lastName: string;
+          };
         }
       ];
     }
@@ -70,6 +83,15 @@ const dataSchema: DataSchema[] = [
   { label: "Description", name: "detialDescription", type: "editor" },
   { label: "Sex", name: "sex", type: "select", option: ["female", "male"] },
   {
+    label: "fullName",
+    name: "fullName",
+    type: "object",
+    array: [
+      { label: "First Name", name: "firstName", type: "text" },
+      { label: "Last Name", name: "lastName", type: "text" }
+    ]
+  },
+  {
     label: "Nested",
     name: "nested",
     type: "array",
@@ -91,6 +113,15 @@ const dataSchema: DataSchema[] = [
       { label: "Description", name: "description", type: "textArea" },
       { label: "Description", name: "detialDescription", type: "editor" },
       { label: "Sex", name: "sex", type: "select", option: ["female", "male"] },
+      {
+        label: "fullName",
+        name: "fullName",
+        type: "object",
+        array: [
+          { label: "First Name", name: "firstName", type: "text" },
+          { label: "Last Name", name: "lastName", type: "text" }
+        ]
+      },
       {
         label: "Nested2",
         name: "nested2",
@@ -117,6 +148,15 @@ const dataSchema: DataSchema[] = [
             name: "sex",
             type: "select",
             option: ["female", "male"]
+          },
+          {
+            label: "fullName",
+            name: "fullName",
+            type: "object",
+            array: [
+              { label: "First Name", name: "firstName", type: "text" },
+              { label: "Last Name", name: "lastName", type: "text" }
+            ]
           }
         ]
       }
@@ -132,6 +172,10 @@ const data: FormData = {
   food: ["salad", "pasta"],
   color: "red",
   detialDescription: "This is more information",
+  fullName: {
+    firstName: "object first name",
+    lastName: "object last name"
+  },
   nested: [
     {
       firstName: "smith nested",
@@ -141,6 +185,10 @@ const data: FormData = {
       food: ["salad", "pasta"],
       color: "red",
       detialDescription: "This is more information  nested",
+      fullName: {
+        firstName: "object first name",
+        lastName: "object last name"
+      },
       nested2: [
         {
           firstName: "smith nested2",
@@ -149,7 +197,11 @@ const data: FormData = {
           description: "initial Description  nested2",
           food: ["salad", "pasta"],
           color: "blue",
-          detialDescription: "This is more information  nested2"
+          detialDescription: "This is more information  nested2",
+          fullName: {
+            firstName: "object first name",
+            lastName: "object last name"
+          }
         }
       ]
     }
