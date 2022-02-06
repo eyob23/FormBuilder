@@ -6,210 +6,455 @@ import {
   useWatch,
   get
 } from "react-hook-form";
+// import { DevTool } from "@hookform/devtools";
 import { ErrorMessage } from "@hookform/error-message";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-export function ErrorCounter({ resolver, data }) {
+// import ErrorBoundary from "../ErrorBoundary";
+import {
+  Input,
+  Row,
+  Col,
+  FormGroup,
+  FormFeedback,
+  FormText,
+  Label,
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
+  CardText,
+  CardSubtitle
+} from "reactstrap";
+export function EcErrorCounter({ resolver, control }) {
   const [count, setCount] = useState(0);
+  const data = useWatch({
+    control
+  });
   useEffect(() => {
     resolver(data).then((e) => {
       setCount(Object.keys(e.errors).length | 0);
-      console.log({
-        values: e.values,
-        errors: e.errors,
-        errorCount: Object.keys(e.errors).length | 0
-      });
+      // console.log({
+      //   values: e.values,
+      //   errors: e.errors,
+      //   errorCount: Object.keys(e.errors).length | 0
+      // });
     });
   }, [data, resolver]);
-  return <div>Error count {count}</div>;
+  return (
+    <>
+      <div>validation error count {count}</div>
+      <div>
+        <pre>{JSON.stringify(data, null, 1)}</pre>
+      </div>
+    </>
+  );
 }
-export default function Form({
+export function FormState({ reset, control, formState }) {
+  const data = useWatch({
+    control
+  });
+  const {
+    isDirty,
+    isValid,
+    dirtyFields,
+    isSubmitted,
+    isSubmitSuccessful,
+    submitCount
+  } = formState;
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset(data, {
+        keepErrors: false,
+        keepDirty: false,
+        keepIsSubmitted: true,
+        keepTouched: false,
+        keepIsValid: true,
+        keepSubmitCount: true
+      });
+    }
+  }, [submitCount, isSubmitSuccessful]);
+  return (
+    <>
+      <div>
+        <div>DirtyFields</div>
+        <pre>{JSON.stringify(dirtyFields, null, 1)}</pre>
+        <div>IsDirty</div>
+        <pre>{JSON.stringify(isDirty, null, 1)}</pre>
+        <div>IsValid</div>
+        <pre>{JSON.stringify(isValid, null, 1)}</pre>
+        <div>IsSubmitSuccessful</div>
+        <pre>{JSON.stringify(isSubmitSuccessful, null, 1)}</pre>
+        <div>SubmitCount</div>
+        <pre>{JSON.stringify(submitCount, null, 1)}</pre>
+      </div>
+    </>
+  );
+}
+export default function EcForm({
   defaultValues,
   children,
   onSubmit,
   dataSchema,
-  useYupValidationResolver,
+  useValidationResolver,
   validationSchema
 }) {
-  const resolver = useYupValidationResolver(validationSchema);
-  const { handleSubmit, register, control, formState } = useForm({
+  const resolver = useValidationResolver(validationSchema);
+  const methods = useForm({
     defaultValues,
     resolver
   });
-  const watchAll = useWatch({
-    control
-  });
-  //error from RHF
-  console.log(formState.errors);
-
+  const { handleSubmit, control } = methods;
+  const [disabled, setIsDisabled] = useState(null);
+  const [readOnly, setReadonly] = useState(null);
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <pre>{JSON.stringify(watchAll, null, 2)}</pre>
-      </div>
-      <ErrorCounter resolver={resolver} data={watchAll} />
-      <Fields
-        dataSchema={dataSchema}
-        register={register}
-        control={control}
-        formState={formState}
-      />
-      <button>Submit</button>
-    </form>
+    <>
+      <button type="button" onClick={() => setIsDisabled(!disabled)}>
+        Taggle disabled {disabled ? "Disabled" : "Enabled"}
+      </button>
+      <button type="button" onClick={() => setReadonly(!readOnly)}>
+        Taggle read/Edit mode {readOnly ? "Readonly mode" : "Edit mode"}
+      </button>
+      <Row>
+        <Col className="bg-light border">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <EcFields
+              dataSchema={dataSchema}
+              methods={methods}
+              disabled={disabled}
+              readOnly={readOnly}
+            />
+            <Button color="primary">Click Me</Button>
+            <Button type="submit" variant="contained" color="primary">
+              Submit
+            </Button>
+          </form>
+        </Col>
+        <Col className="bg-light border">
+          <FormState {...methods} />
+          <EcErrorCounter resolver={resolver} control={control} />
+        </Col>
+      </Row>
+
+      {/* <DevTool control={control} /> */}
+    </>
   );
 }
-export const Fields = ({ dataSchema, register, control, formState }) => {
+export const EcFields = (props) => {
+  const { dataSchema, ...rest } = props;
   return (
     <>
       {dataSchema.map((schema) => (
         <div key={schema.name} style={{ marginBottom: "1rem" }}>
-          <div>
+          {/* <div>
             <label htmlFor={schema.name}>{schema.label}</label>
-          </div>
-          <Field
-            schema={schema}
-            register={register}
-            control={control}
-            formState={formState}
-          />
+          </div> */}
+          <EcField schema={schema} {...rest} />
         </div>
       ))}
     </>
   );
 };
-export const Field = (props) => {
-  const { schema, control, formState } = props;
-  const register = props.register(schema.name, {
-    required: `${schema.label} is required.`
-  });
+export const EcField = (props) => {
+  const {
+    schema: { type, name, label },
+    methods: { formState }
+  } = props;
   const { errors } = formState;
   const renderFieldType = () => {
-    switch (schema.type) {
+    switch (type) {
       case "select":
-        return (
-          <Select
-            register={register}
-            name={schema.name}
-            options={schema.option}
-          />
-        );
+        return <EcSelect {...props} />;
       case "checkbox":
-        return (
-          <CheckBox
-            register={register}
-            name={schema.name}
-            options={schema.option}
-            control={control}
-          />
-        );
-      case "array":
-        return (
-          <FieldArray
-            register={props.register}
-            name={schema.name}
-            options={schema.option}
-            array={schema.array}
-            control={control}
-            formState={formState}
-          />
-        );
+        return <EcCheckBox {...props} />;
+      case "listOfFieldItems":
+        return <EcFieldArray {...props} />;
       case "object":
-        return (
-          <FieldObject
-            register={props.register}
-            name={schema.name}
-            options={schema.option}
-            array={schema.array}
-            control={control}
-            formState={formState}
-          />
-        );
+        return <EcFieldObject {...props} />;
       case "editor":
-        return (
-          <Editor
-            register={register}
-            name={schema.name}
-            options={schema.option}
-            control={control}
-          />
-        );
+        return <EcEditor {...props} />;
       case "radio":
-        return (
-          <Radio
-            register={register}
-            name={schema.name}
-            options={schema.option}
-            control={control}
-          />
-        );
+        return <EcRadio {...props} />;
       case "text":
-        return <Input register={register} name={schema.name} />;
+        return <EcInput {...props} />;
       case "textArea":
-        return <TextArea register={register} name={schema.name} />;
+        return <EcInput {...props} />;
       default:
-        return <div key={"default"}>invalid form type {schema.type}</div>;
+        return <div key={"default"}>invalid form type {type}</div>;
     }
   };
-  const style = get(errors, schema.name)
-    ? { border: "3px solid red", display: "inline-block" }
+  const CustomProps = get(errors, name)
+    ? { style: { border: "3px solid red" }, className: "FieldWithError" }
     : null;
   return (
     <>
-      <div style={{ ...style }}>{renderFieldType()}</div>
+      <div {...CustomProps}>{renderFieldType()}</div>
       <ErrorMessage
         errors={errors}
-        name={schema.name}
+        name={name}
         render={({ message }) => (
-          <p>error:{message || `"${schema.label} is required."`}</p>
+          <p>error:{message || `"${label} is required."`}</p>
         )}
       />
     </>
   );
 };
-export function Input({ register, name, ...rest }) {
-  return <input {...register} {...rest} />;
-}
-export function TextArea({ register, name, ...rest }) {
-  return <textarea {...register} {...rest} cols={50} rows={10} />;
-}
-
-export function Select({ register, options, name, ...rest }) {
+export function EcInput(props) {
+  const {
+    methods: { control },
+    schema,
+    ...rest
+  } = props;
+  const {
+    field: { onChange, onBlur, name, value, ref },
+    fieldState: { invalid, isTouched, isDirty },
+    formState: { touchedFields, dirtyFields, isSubmitted }
+  } = useController({
+    name: schema.name,
+    control
+  });
+  if (rest.readOnly) {
+    return (
+      <div>
+        {schema.label}: {value}
+      </div>
+    );
+  }
   return (
-    <select {...register} {...rest}>
-      {options.map((value) => (
-        <option key={"select-" + value} value={value}>
-          {value}
-        </option>
-      ))}
-    </select>
+    <>
+      <div>
+        I'm an input type {schema.type} and mod is {rest?.readonly?.toString()}
+      </div>
+      <FormGroup>
+        <Label htmlFor={name}>{schema.label}</Label>
+        <Input
+          onChange={onChange} // send value to hook form
+          onBlur={onBlur} // notify when input is touched/blur
+          value={value} // input value
+          name={name} // send down the input name
+          innerRef={ref} // send input ref, so we can focus on input when error appear
+          {...rest}
+          invalid={invalid}
+          valid={!invalid && isSubmitted}
+        />
+        <FormFeedback tooltip valid style={{ position: "static" }}>
+          Sweet! that name is available
+        </FormFeedback>
+        <FormFeedback tooltip invalid style={{ position: "static" }}>
+          Oh noes! that name is already taken!
+        </FormFeedback>
+        <FormText>Example help text that remains unchanged.</FormText>
+      </FormGroup>
+    </>
   );
 }
-export function CheckBox({ register, options, name, control, ...rest }) {
-  return options.map((option) => (
-    <div key={"select-" + option}>
-      <input type="checkbox" {...register} {...rest} value={option} />
-      <label htmlFor={option}>{option}</label>
-    </div>
-  ));
+
+export function EcSelect(props) {
+  const {
+    methods: { control },
+    schema,
+    ...rest
+  } = props;
+  const {
+    field: { onChange, onBlur, name, value, ref },
+    fieldState: { invalid, isTouched, isDirty },
+    formState: { touchedFields, dirtyFields, isSubmitted }
+  } = useController({
+    name: schema.name,
+    control
+  });
+  if (rest.readOnly) {
+    return (
+      <div>
+        {schema.label}: {value}
+      </div>
+    );
+  }
+  return (
+    <FormGroup>
+      <Label htmlFor={name}>{schema.label}</Label>
+      <Input
+        type={schema.type}
+        onChange={onChange} // send value to hook form
+        onBlur={onBlur} // notify when input is touched/blur
+        value={value} // input value
+        name={name} // send down the input name
+        innerRef={ref} // send input ref, so we can focus on input when error appear
+        {...rest}
+        invalid={invalid}
+        valid={!invalid && isSubmitted}
+      >
+        {schema.option.map((opt) => (
+          <option key={"select-" + opt}>{opt}</option>
+        ))}
+      </Input>
+      <FormFeedback tooltip valid style={{ position: "static" }}>
+        Sweet! that name is available
+      </FormFeedback>
+      <FormFeedback tooltip invalid style={{ position: "static" }}>
+        Oh noes! that name is already taken!
+      </FormFeedback>
+      <FormText>Example help text that remains unchanged.</FormText>
+    </FormGroup>
+  );
 }
-export function Radio({ register, options, name, control, ...rest }) {
-  return options.map((option) => (
-    <div key={"radio-" + option}>
-      <input type="radio" {...register} {...rest} value={option} />
-      <label htmlFor={option}>{option}</label>
-    </div>
-  ));
+export function EcCheckBox(props) {
+  const {
+    methods: { control },
+    schema,
+    ...rest
+  } = props;
+  const {
+    field: { onChange, onBlur, name, value, ref },
+    fieldState: { invalid, isTouched, isDirty },
+    formState: { touchedFields, dirtyFields, isSubmitted }
+  } = useController({
+    name: schema.name,
+    control
+  });
+  if (rest.readOnly) {
+    return (
+      <div>
+        {schema.label}: {value}
+      </div>
+    );
+  }
+  return (
+    <>
+      <div>I'm an input type {schema.type}</div>
+      <FormGroup tag="fieldset">
+        <legend className="fs-6">{schema.label}</legend>
+        {schema.option.map((opt) => (
+          <FormGroup check>
+            <Label htmlFor={name} check>
+              {opt}
+            </Label>
+            <Input
+              key={"check-" + opt}
+              type={schema.type}
+              // checked={value === o}
+              checked={value?.includes(opt)}
+              //onChange={onChange} // send value to hook form
+              onChange={(e) => {
+                if (e.target.checked) {
+                  onChange([
+                    ...new Set([...value, e.target.value, e.target.value])
+                  ]);
+                } else {
+                  onChange(value.filter((v) => v !== e.target.value));
+                }
+              }}
+              onBlur={onBlur} // notify when input is touched/blur
+              value={opt} // input value
+              name={name} // send down the input name
+              innerRef={ref} // send input ref, so we can focus on input when error appear
+              {...rest}
+              invalid={invalid}
+              valid={!invalid && isSubmitted}
+            />
+          </FormGroup>
+        ))}
+        <div
+          className={invalid ? "is-invalid" : isSubmitted ? "is-valid" : null}
+        ></div>
+        <FormFeedback tooltip valid style={{ position: "static" }}>
+          Sweet! that name is available
+        </FormFeedback>
+        <FormFeedback tooltip invalid style={{ position: "static" }}>
+          Oh noes! that name is already taken!
+        </FormFeedback>
+        <FormText>Example help text that remains unchanged.</FormText>
+      </FormGroup>
+    </>
+  );
 }
-export function Editor({ register, options, name, control, ...rest }) {
+export function EcRadio(props) {
+  const {
+    methods: { control },
+    schema,
+    ...rest
+  } = props;
+  const {
+    field: { onChange, onBlur, name, value, ref },
+    fieldState: { invalid, isTouched, isDirty },
+    formState: { touchedFields, dirtyFields, isSubmitted }
+  } = useController({
+    name: schema.name,
+    control
+  });
+  if (rest.readOnly) {
+    return (
+      <div>
+        {schema.label}: {value}
+      </div>
+    );
+  }
+  return (
+    <>
+      <div>I'm an input type {schema.type}</div>
+      <FormGroup tag="fieldset">
+        <legend className="fs-6">{schema.label}</legend>
+        {schema.option.map((opt) => (
+          <FormGroup check>
+            <Label htmlFor={name} check>
+              {opt}
+            </Label>
+            <Input
+              key={"radio-" + opt}
+              type={schema.type}
+              checked={value === opt}
+              onChange={onChange} // send value to hook form
+              onBlur={onBlur} // notify when input is touched/blur
+              value={opt} // input value
+              name={name} // send down the input name
+              innerRef={ref} // send input ref, so we can focus on input when error appear
+              {...rest}
+              invalid={invalid}
+              valid={!invalid && isSubmitted}
+            />
+          </FormGroup>
+        ))}
+        <div
+          className={invalid ? "is-invalid" : isSubmitted ? "is-valid" : null}
+        ></div>
+        <FormFeedback tooltip valid style={{ position: "static" }}>
+          Sweet! that name is available
+        </FormFeedback>
+        <FormFeedback tooltip invalid style={{ position: "static" }}>
+          Oh noes! that name is already taken!
+        </FormFeedback>
+        <FormText>Example help text that remains unchanged.</FormText>
+      </FormGroup>
+    </>
+  );
+}
+export function EcEditor(props) {
+  const {
+    methods: { control },
+    schema: { name, label },
+    disabled,
+    ...rest
+  } = props;
   const { field } = useController({
     name,
     control
   });
+  if (rest.readOnly) {
+    return (
+      <div>
+        {label}: {field.value}
+      </div>
+    );
+  }
   return (
     <CKEditor
       editor={ClassicEditor}
       data={field.value}
+      id={name}
+      disabled={disabled}
       onReady={(editor) => {
+        // editor.disabled  = disabled ;
         editor.editing.view.change((writer) => {
           writer.setStyle(
             "height",
@@ -225,78 +470,78 @@ export function Editor({ register, options, name, control, ...rest }) {
     />
   );
 }
-export function FieldArray({
-  register,
-  options,
-  name,
-  control,
-  array,
-  formState,
-  ...rest
-}) {
+export function EcFieldArray(props) {
+  const {
+    methods: { control },
+    schema: { name, label, listOfFieldItems },
+
+    ...rest
+  } = props;
   const { fields, append, remove } = useFieldArray({
     control,
     name
   });
-
   return (
-    <div style={{ padding: "1rem" }}>
-      <div
-        style={{ border: "1px solid black", padding: "1rem", margin: "1rem" }}
-      >
+    <Card>
+      <CardBody>
+        <CardTitle className="display-2">{label}</CardTitle>
+        <CardSubtitle className="mb-2 text-muted">{`You can add more ${label} by clicking the add button`}</CardSubtitle>
         {fields.map((item, index) => (
-          <div key={item.id}>
-            <Fields
-              dataSchema={array.map((schema) => ({
+          <CardText key={item.id}>
+            <EcFields
+              dataSchema={listOfFieldItems?.map((schema) => ({
                 ...schema,
                 name: `${name}.${index}.${schema.name}`
               }))}
-              register={register}
-              control={control}
-              formState={formState}
+              methods={props.methods}
+              {...rest}
             />
-            <button type="button" onClick={() => remove(index)}>
+            <Button type="danger" onClick={() => remove(index)}>
               Delete {name}
-            </button>
-          </div>
+            </Button>
+          </CardText>
         ))}
-      </div>
-      <button
-        type="button"
-        onClick={() => append({ firstName: "bill", lastName: "luo" })}
-      >
-        Add new {name}
-      </button>
-    </div>
+        <Button
+          type="default"
+          onClick={() =>
+            append({
+              firstName: "smith nested23",
+              lastName: "Joe nested23",
+              sex: "male",
+              description: "initial Description  nested23",
+              food: ["salad", "pasta"],
+              color: "blue",
+              detialDescription: "This is more information  nested23",
+              fullName: {
+                firstName: "object first name3",
+                lastName: "object last name3"
+              }
+            })
+          }
+        >
+          Add new {name}
+        </Button>
+      </CardBody>
+    </Card>
   );
 }
-export function FieldObject({
-  register,
-  options,
-  name,
-  control,
-  array,
-  formState,
-  ...rest
-}) {
+export function EcFieldObject(props) {
+  const {
+    schema: { name, label, listOfFieldItems },
+    ...rest
+  } = props;
   return (
-    <div style={{ padding: "1rem" }}>
-      <div
-        style={{ border: "1px solid black", padding: "1rem", margin: "1rem" }}
-      >
-        <div>
-          <pre>{JSON.stringify(array, null, 2)}</pre>
-          <Fields
-            dataSchema={array.map((schema) => ({
-              ...schema,
-              name: `${name}.${schema.name}`
-            }))}
-            register={register}
-            control={control}
-            formState={formState}
-          />
-        </div>
-      </div>
-    </div>
+    <Card>
+      <CardBody>
+        <CardTitle>{label}</CardTitle>
+        <EcFields
+          dataSchema={listOfFieldItems?.map((schema) => ({
+            ...schema,
+            name: `${name}.${schema.name}`
+          }))}
+          {...rest}
+        />
+      </CardBody>
+    </Card>
   );
 }

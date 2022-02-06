@@ -13,6 +13,7 @@ export const validationSchema = yup.object({
   lastName: yup.string().required("Required"),
   sex: yup.string().required("Required"),
   description: yup.string().required("Required"),
+  detialDescription: yup.string().required("Required"),
   color: yup.string().required("Required"),
   food: yup.array().arrayNumber("Required at least one food iteam"),
   nested: yup.array().of(
@@ -39,6 +40,7 @@ export const validationSchema = yup.object({
 const useYupValidationResolver = (validationSchema) => {
   return useCallback(
     async (data) => {
+      //console.log("data", data);
       try {
         const values = await validationSchema.validate(data, {
           abortEarly: false

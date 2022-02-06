@@ -1,6 +1,5 @@
-import { render } from "react-dom";
-
+import ReactDOM from "react-dom";
 import App from "./App";
+import "./scss/custom.scss";
 
-const rootElement = document.getElementById("root");
-render(<App />, rootElement);
+ReactDOM.render(<App />, document.querySelector("#root"));

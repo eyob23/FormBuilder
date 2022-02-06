@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Form from "./Form";
 import useYupValidationResolver, {
   validationSchema
 } from "./Form/useYupValidationResolver";
 import "./styles.css";
+import server from "./mocks/s";
 interface FieldItem {
   label: string;
   name: string;
@@ -14,12 +15,11 @@ interface FieldItem {
     | "checkbox"
     | "radio"
     | "editor"
-    | "array"
+    | "listOfFieldItems"
     | "object";
   option?: Array<string>;
-  array?: Array<FieldItem>;
+  listOfFieldItems?: Array<FieldItem>;
 }
-interface DataSchema extends FieldItem {}
 interface FormData {
   firstName: string;
   lastName: string;
@@ -28,6 +28,7 @@ interface FormData {
   food: Array<string>;
   color: string;
   detialDescription: string;
+  // country: string;
   fullName: {
     firstName: string;
     lastName: string;
@@ -64,9 +65,15 @@ interface FormData {
   ];
 }
 
-const dataSchema: DataSchema[] = [
+const dataSchema: FieldItem[] = [
   { label: "First Name", name: "firstName", type: "text" },
   { label: "Last Name", name: "lastName", type: "text" },
+  {
+    label: "Sex",
+    name: "sex",
+    type: "select",
+    option: ["female", "male", "Other"]
+  },
   {
     label: "Fav Food",
     name: "food",
@@ -81,12 +88,12 @@ const dataSchema: DataSchema[] = [
   },
   { label: "Description", name: "description", type: "textArea" },
   { label: "Description", name: "detialDescription", type: "editor" },
-  { label: "Sex", name: "sex", type: "select", option: ["female", "male"] },
+
   {
     label: "fullName",
     name: "fullName",
     type: "object",
-    array: [
+    listOfFieldItems: [
       { label: "First Name", name: "firstName", type: "text" },
       { label: "Last Name", name: "lastName", type: "text" }
     ]
@@ -94,8 +101,8 @@ const dataSchema: DataSchema[] = [
   {
     label: "Nested",
     name: "nested",
-    type: "array",
-    array: [
+    type: "listOfFieldItems",
+    listOfFieldItems: [
       { label: "First Name", name: "firstName", type: "text" },
       {
         label: "Fav Food",
@@ -117,7 +124,7 @@ const dataSchema: DataSchema[] = [
         label: "fullName",
         name: "fullName",
         type: "object",
-        array: [
+        listOfFieldItems: [
           { label: "First Name", name: "firstName", type: "text" },
           { label: "Last Name", name: "lastName", type: "text" }
         ]
@@ -125,8 +132,8 @@ const dataSchema: DataSchema[] = [
       {
         label: "Nested2",
         name: "nested2",
-        type: "array",
-        array: [
+        type: "listOfFieldItems",
+        listOfFieldItems: [
           { label: "First Name", name: "firstName", type: "text" },
           {
             label: "Fav Food",
@@ -153,7 +160,7 @@ const dataSchema: DataSchema[] = [
             label: "fullName",
             name: "fullName",
             type: "object",
-            array: [
+            listOfFieldItems: [
               { label: "First Name", name: "firstName", type: "text" },
               { label: "Last Name", name: "lastName", type: "text" }
             ]
@@ -170,7 +177,7 @@ const data: FormData = {
   sex: "male",
   description: "initial Description",
   food: ["salad", "pasta"],
-  color: "red",
+  color: "",
   detialDescription: "This is more information",
   fullName: {
     firstName: "object first name",
@@ -210,17 +217,20 @@ const data: FormData = {
 
 export default function App() {
   const onSubmit = (data: FormData) => console.log(data);
-
+  const numberOfForms = 1;
   return (
     <div style={{ margin: "2rem" }}>
       <h1>Form Builder from JSON</h1>
-      <Form
-        onSubmit={onSubmit}
-        dataSchema={dataSchema}
-        defaultValues={data}
-        validationSchema={validationSchema}
-        useYupValidationResolver={useYupValidationResolver}
-      />
+      {[...Array(numberOfForms)].map((e, i) => (
+        <Form
+          key={i.toString()}
+          onSubmit={onSubmit}
+          dataSchema={dataSchema}
+          defaultValues={data}
+          validationSchema={validationSchema}
+          useValidationResolver={useYupValidationResolver}
+        />
+      ))}
     </div>
   );
 }
