@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Form from "./Form";
 import useYupValidationResolver, {
   validationSchema
 } from "./Form/useYupValidationResolver";
 import "./styles.css";
-import server from "./mocks/s";
 interface FieldItem {
   label: string;
   name: string;

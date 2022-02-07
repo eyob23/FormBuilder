@@ -6,11 +6,10 @@ import {
   useWatch,
   get
 } from "react-hook-form";
-// import { DevTool } from "@hookform/devtools";
 import { ErrorMessage } from "@hookform/error-message";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-// import ErrorBoundary from "../ErrorBoundary";
+import ErrorBoundary from "../ErrorBoundary";
 import {
   Input,
   Row,
@@ -23,8 +22,8 @@ import {
   Card,
   CardBody,
   CardTitle,
-  CardText,
-  CardSubtitle
+  CardSubtitle,
+  Container
 } from "reactstrap";
 export function EcErrorCounter({ resolver, control }) {
   const [count, setCount] = useState(0);
@@ -58,13 +57,14 @@ export function FormState({ reset, control, formState }) {
     isDirty,
     isValid,
     dirtyFields,
-    isSubmitted,
+    // isSubmitted,
     isSubmitSuccessful,
     submitCount
   } = formState;
+  const [lastCount, setLastCount] = useState(submitCount);
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
+    if (isSubmitSuccessful && lastCount < submitCount) {
       reset(data, {
         keepErrors: false,
         keepDirty: false,
@@ -73,8 +73,9 @@ export function FormState({ reset, control, formState }) {
         keepIsValid: true,
         keepSubmitCount: true
       });
+      setLastCount(submitCount);
     }
-  }, [submitCount, isSubmitSuccessful]);
+  }, [submitCount, isSubmitSuccessful, reset, data, lastCount]);
   return (
     <>
       <div>
@@ -116,28 +117,27 @@ export default function EcForm({
       <button type="button" onClick={() => setReadonly(!readOnly)}>
         Taggle read/Edit mode {readOnly ? "Readonly mode" : "Edit mode"}
       </button>
-      <Row>
-        <Col className="bg-light border">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <EcFields
-              dataSchema={dataSchema}
-              methods={methods}
-              disabled={disabled}
-              readOnly={readOnly}
-            />
-            <Button color="primary">Click Me</Button>
-            <Button type="submit" variant="contained" color="primary">
-              Submit
-            </Button>
-          </form>
-        </Col>
-        <Col className="bg-light border">
-          <FormState {...methods} />
-          <EcErrorCounter resolver={resolver} control={control} />
-        </Col>
-      </Row>
-
-      {/* <DevTool control={control} /> */}
+      <Container fluid className="bg-light border">
+        <Row>
+          <Col className="bg-light border">
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <EcFields
+                dataSchema={dataSchema}
+                methods={methods}
+                disabled={disabled}
+                readOnly={readOnly}
+              />
+              <Button type="submit" variant="contained" color="primary">
+                Submit
+              </Button>
+            </form>
+          </Col>
+          <Col className="bg-light border">
+            <FormState {...methods} />
+            <EcErrorCounter resolver={resolver} control={control} />
+          </Col>
+        </Row>
+      </Container>
     </>
   );
 }
@@ -150,7 +150,9 @@ export const EcFields = (props) => {
           {/* <div>
             <label htmlFor={schema.name}>{schema.label}</label>
           </div> */}
-          <EcField schema={schema} {...rest} />
+          <ErrorBoundary>
+            <EcField schema={schema} {...rest} />
+          </ErrorBoundary>
         </div>
       ))}
     </>
@@ -221,6 +223,10 @@ export function EcInput(props) {
       </div>
     );
   }
+  // if (Math.random() > 0.5) {
+  //   console.log("I was here");
+  //   throw new Error("random error message for testing error handling!");
+  // }
   return (
     <>
       <div>
@@ -241,7 +247,7 @@ export function EcInput(props) {
         <FormFeedback tooltip valid style={{ position: "static" }}>
           Sweet! that name is available
         </FormFeedback>
-        <FormFeedback tooltip invalid style={{ position: "static" }}>
+        <FormFeedback tooltip style={{ position: "static" }}>
           Oh noes! that name is already taken!
         </FormFeedback>
         <FormText>Example help text that remains unchanged.</FormText>
@@ -292,7 +298,7 @@ export function EcSelect(props) {
       <FormFeedback tooltip valid style={{ position: "static" }}>
         Sweet! that name is available
       </FormFeedback>
-      <FormFeedback tooltip invalid style={{ position: "static" }}>
+      <FormFeedback tooltip style={{ position: "static" }}>
         Oh noes! that name is already taken!
       </FormFeedback>
       <FormText>Example help text that remains unchanged.</FormText>
@@ -316,22 +322,20 @@ export function EcCheckBox(props) {
   if (rest.readOnly) {
     return (
       <div>
-        {schema.label}: {value}
+        {schema.label}: {value?.join(", ")}
       </div>
     );
   }
   return (
     <>
-      <div>I'm an input type {schema.type}</div>
       <FormGroup tag="fieldset">
         <legend className="fs-6">{schema.label}</legend>
         {schema.option.map((opt) => (
-          <FormGroup check>
+          <FormGroup check key={"check-" + opt}>
             <Label htmlFor={name} check>
               {opt}
             </Label>
             <Input
-              key={"check-" + opt}
               type={schema.type}
               // checked={value === o}
               checked={value?.includes(opt)}
@@ -361,7 +365,7 @@ export function EcCheckBox(props) {
         <FormFeedback tooltip valid style={{ position: "static" }}>
           Sweet! that name is available
         </FormFeedback>
-        <FormFeedback tooltip invalid style={{ position: "static" }}>
+        <FormFeedback tooltip style={{ position: "static" }}>
           Oh noes! that name is already taken!
         </FormFeedback>
         <FormText>Example help text that remains unchanged.</FormText>
@@ -392,16 +396,14 @@ export function EcRadio(props) {
   }
   return (
     <>
-      <div>I'm an input type {schema.type}</div>
       <FormGroup tag="fieldset">
         <legend className="fs-6">{schema.label}</legend>
         {schema.option.map((opt) => (
-          <FormGroup check>
+          <FormGroup check key={"radio-" + opt}>
             <Label htmlFor={name} check>
               {opt}
             </Label>
             <Input
-              key={"radio-" + opt}
               type={schema.type}
               checked={value === opt}
               onChange={onChange} // send value to hook form
@@ -421,7 +423,7 @@ export function EcRadio(props) {
         <FormFeedback tooltip valid style={{ position: "static" }}>
           Sweet! that name is available
         </FormFeedback>
-        <FormFeedback tooltip invalid style={{ position: "static" }}>
+        <FormFeedback tooltip style={{ position: "static" }}>
           Oh noes! that name is already taken!
         </FormFeedback>
         <FormText>Example help text that remains unchanged.</FormText>
@@ -455,10 +457,10 @@ export function EcEditor(props) {
       disabled={disabled}
       onReady={(editor) => {
         // editor.disabled  = disabled ;
-        editor.editing.view.change((writer) => {
+        editor?.editing.view.change((writer) => {
           writer.setStyle(
             "height",
-            "200px",
+            "33vh",
             editor.editing.view.document.getRoot()
           );
         });
@@ -487,7 +489,7 @@ export function EcFieldArray(props) {
         <CardTitle className="display-2">{label}</CardTitle>
         <CardSubtitle className="mb-2 text-muted">{`You can add more ${label} by clicking the add button`}</CardSubtitle>
         {fields.map((item, index) => (
-          <CardText key={item.id}>
+          <div key={item.id}>
             <EcFields
               dataSchema={listOfFieldItems?.map((schema) => ({
                 ...schema,
@@ -496,13 +498,13 @@ export function EcFieldArray(props) {
               methods={props.methods}
               {...rest}
             />
-            <Button type="danger" onClick={() => remove(index)}>
+            <Button type="button" color="danger" onClick={() => remove(index)}>
               Delete {name}
             </Button>
-          </CardText>
+          </div>
         ))}
         <Button
-          type="default"
+          type="button"
           onClick={() =>
             append({
               firstName: "smith nested23",

@@ -1,10 +1,29 @@
 import React from "react";
+import {
+  Input,
+  Row,
+  Col,
+  FormGroup,
+  FormFeedback,
+  FormText,
+  Label,
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
+  CardText,
+  CardSubtitle,
+  Alert
+} from "reactstrap";
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { error: null, errorInfo: null };
+    this.state = { error: null, errorInfo: null, resetCount: null };
   }
-
+  reRender = () => {
+    // calling the forceUpdate() method
+    this.forceUpdate();
+  };
   componentDidCatch(error, errorInfo) {
     // Catch errors in any components below and re-render with error message
     this.setState({
@@ -21,12 +40,18 @@ class ErrorBoundary extends React.Component {
 
       return (
         <div>
-          <h2>Something went wrong.</h2>
-          <details style={{ whiteSpace: "pre-wrap" }}>
-            {this.state.error && this.state.error.toString()}
-            <br />
-            {this.state.errorInfo.componentStack}
-          </details>
+          <Alert color="danger">
+            <h4 className="alert-heading">Something went wrong.</h4>
+            <details style={{ whiteSpace: "pre-wrap" }}>
+              {this.state.error && this.state.error.toString()}
+              <br />
+              {this.state.errorInfo.componentStack}
+            </details>
+            <hr />
+            <button className="mb-0" type="button" onClick={this.reRender}>
+              Reset
+            </button>
+          </Alert>
         </div>
       );
     }
