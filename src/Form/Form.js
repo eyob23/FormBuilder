@@ -231,9 +231,6 @@ export function EcInput(props) {
   // }
   return (
     <>
-      <div>
-        I'm an input type {schema.type} and mod is {rest?.readonly?.toString()}
-      </div>
       <FormGroup>
         <Label htmlFor={name}>{schema.label}</Label>
         <Input
