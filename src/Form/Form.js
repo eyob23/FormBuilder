@@ -23,7 +23,9 @@ import {
   CardBody,
   CardTitle,
   CardSubtitle,
-  Container
+  Container,
+  CardFooter,
+  CardHeader
 } from "reactstrap";
 export function EcErrorCounter({ resolver, control }) {
   const [count, setCount] = useState(0);
@@ -331,7 +333,7 @@ export function EcCheckBox(props) {
       <FormGroup tag="fieldset">
         <legend className="fs-6">{schema.label}</legend>
         {schema.option.map((opt) => (
-          <FormGroup check key={"check-" + opt}>
+          <FormGroup check key={"check-" + opt} inline>
             <Label htmlFor={name} check>
               {opt}
             </Label>
@@ -399,7 +401,7 @@ export function EcRadio(props) {
       <FormGroup tag="fieldset">
         <legend className="fs-6">{schema.label}</legend>
         {schema.option.map((opt) => (
-          <FormGroup check key={"radio-" + opt}>
+          <FormGroup check key={"radio-" + opt} inline>
             <Label htmlFor={name} check>
               {opt}
             </Label>
@@ -460,7 +462,7 @@ export function EcEditor(props) {
         editor.editing.view.change((writer) => {
           writer.setStyle(
             "height",
-            "33vh",
+            "10vh",
             editor.editing.view.document.getRoot()
           );
         });
@@ -484,10 +486,12 @@ export function EcFieldArray(props) {
     name
   });
   return (
-    <Card>
-      <CardBody>
-        <CardTitle className="display-2">{label}</CardTitle>
+    <Card className="my-5 mx-4">
+      <CardHeader>
+        <CardTitle className="display-4">{label}</CardTitle>
         <CardSubtitle className="mb-2 text-muted">{`You can add more ${label} by clicking the add button`}</CardSubtitle>
+      </CardHeader>
+      <CardBody>
         {fields.map((item, index) => (
           <div key={item.id}>
             <EcFields
@@ -503,9 +507,12 @@ export function EcFieldArray(props) {
             </Button>
           </div>
         ))}
-        {console.log("listOfFieldItems", listOfFieldItems)}
+      </CardBody>
+      <CardFooter>
+        {/* {console.log("listOfFieldItems", listOfFieldItems)} */}
         <Button
           type="button"
+          className="float-end"
           onClick={() => {
             //set default value using schema name prop(shallow copy)
             const newObj = listOfFieldItems.reduce(
@@ -526,7 +533,7 @@ export function EcFieldArray(props) {
         >
           Add new {name}
         </Button>
-      </CardBody>
+      </CardFooter>
     </Card>
   );
 }
