@@ -237,7 +237,7 @@ export function EcInput(props) {
         <Input
           onChange={onChange} // send value to hook form
           onBlur={onBlur} // notify when input is touched/blur
-          value={value} // input value
+          value={value || ""} // input value
           name={name} // send down the input name
           innerRef={ref} // send input ref, so we can focus on input when error appear
           {...rest}
@@ -284,7 +284,7 @@ export function EcSelect(props) {
         type={schema.type}
         onChange={onChange} // send value to hook form
         onBlur={onBlur} // notify when input is touched/blur
-        value={value} // input value
+        value={value || ""} // input value
         name={name} // send down the input name
         innerRef={ref} // send input ref, so we can focus on input when error appear
         {...rest}
@@ -457,7 +457,7 @@ export function EcEditor(props) {
       disabled={disabled}
       onReady={(editor) => {
         // editor.disabled  = disabled ;
-        editor?.editing.view.change((writer) => {
+        editor.editing.view.change((writer) => {
           writer.setStyle(
             "height",
             "33vh",
@@ -503,23 +503,26 @@ export function EcFieldArray(props) {
             </Button>
           </div>
         ))}
+        {console.log("listOfFieldItems", listOfFieldItems)}
         <Button
           type="button"
-          onClick={() =>
-            append({
-              firstName: "smith nested23",
-              lastName: "Joe nested23",
-              sex: "male",
-              description: "initial Description  nested23",
-              food: ["salad", "pasta"],
-              color: "blue",
-              detialDescription: "This is more information  nested23",
-              fullName: {
-                firstName: "object first name3",
-                lastName: "object last name3"
-              }
-            })
-          }
+          onClick={() => {
+            //set default value using schema name prop(shallow copy)
+            const newObj = listOfFieldItems.reduce(
+              (acc, obj) => ({
+                ...acc,
+                [obj.name]:
+                  obj.type === "listOfFieldItems"
+                    ? [] //todo: recursive call to array if needed?
+                    : obj.type === "object"
+                    ? {} //todo: recursive call to object if needed?
+                    : ""
+              }),
+              {}
+            );
+            console.log("newObj", newObj);
+            append(newObj);
+          }}
         >
           Add new {name}
         </Button>

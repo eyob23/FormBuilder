@@ -1,20 +1,5 @@
 import React from "react";
-import {
-  Input,
-  Row,
-  Col,
-  FormGroup,
-  FormFeedback,
-  FormText,
-  Label,
-  Button,
-  Card,
-  CardBody,
-  CardTitle,
-  CardText,
-  CardSubtitle,
-  Alert
-} from "reactstrap";
+import { Alert, Button } from "reactstrap";
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -48,9 +33,9 @@ class ErrorBoundary extends React.Component {
               {this.state.errorInfo.componentStack}
             </details>
             <hr />
-            <button className="mb-0" type="button" onClick={this.reRender}>
+            <Button className="mb-0" type="button" onClick={this.reRender}>
               Reset
-            </button>
+            </Button>
           </Alert>
         </div>
       );
