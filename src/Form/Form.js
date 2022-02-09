@@ -490,19 +490,30 @@ export function EcFieldArray(props) {
       </CardHeader>
       <CardBody>
         {fields.map((item, index) => (
-          <div key={item.id}>
-            <EcFields
-              dataSchema={listOfFieldItems?.map((schema) => ({
-                ...schema,
-                name: `${name}.${index}.${schema.name}`
-              }))}
-              methods={props.methods}
-              {...rest}
-            />
-            <Button type="button" color="danger" onClick={() => remove(index)}>
-              Delete {name}
-            </Button>
-          </div>
+          <Card className="my-2 mx-4" key={item.id}>
+            <CardHeader>
+              <CardTitle className="display-6">{label}</CardTitle>
+            </CardHeader>
+            <CardBody>
+              <EcFields
+                dataSchema={listOfFieldItems?.map((schema) => ({
+                  ...schema,
+                  name: `${name}.${index}.${schema.name}`
+                }))}
+                methods={props.methods}
+                {...rest}
+              />
+            </CardBody>
+            <CardFooter>
+              <Button
+                type="button"
+                color="danger"
+                onClick={() => remove(index)}
+              >
+                Delete {name}
+              </Button>
+            </CardFooter>
+          </Card>
         ))}
       </CardBody>
       <CardFooter>
