@@ -12,5 +12,14 @@ interface FieldItem {
     | "object";
   option?: Array<string>;
   listOfFieldItems?: Array<FieldItem>;
+  taggleable?: boolean;
+  condition?: {
+    when: string;
+    value: boolean | string | number;
+    then: "show" | "hide"; //default show
+    else?: "show" | "hide"; //default hide
+    ShouldClearValue: boolean;
+    ShouldPreserveHistory: boolean;
+  };
 }
 export default FieldItem;
