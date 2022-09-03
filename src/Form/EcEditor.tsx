@@ -1,8 +1,27 @@
 import React from "react";
 import { useController } from "react-hook-form";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-export default function EcEditor(props) {
+import {
+  Editor,
+  EditorTools,
+  EditorChangeEvent
+} from "@progress/kendo-react-editor";
+const {
+  Bold,
+  Italic,
+  Underline,
+  AlignLeft,
+  AlignRight,
+  AlignCenter,
+  Indent,
+  Outdent,
+  OrderedList,
+  UnorderedList,
+  Undo,
+  Redo,
+  Link,
+  Unlink
+} = EditorTools;
+export default function EcEditor(props: any) {
   const {
     methods: { control },
     schema: { name, label },
@@ -20,26 +39,22 @@ export default function EcEditor(props) {
       </div>
     );
   }
+  const onChange = (event: EditorChangeEvent) => {
+    field.onChange(event.html);
+  };
   return (
-    <CKEditor
-      editor={ClassicEditor}
-      data={field.value}
-      id={name}
-      disabled={disabled}
-      onReady={(editor) => {
-        // editor.disabled  = disabled ;
-        // editor.editing.view.change((writer) => {
-        //   writer.setStyle(
-        //     "height",
-        //     "10vh",
-        //     editor.editing.view.document.getRoot()
-        //   );
-        // });
-      }}
-      onChange={(event, editor) => {
-        const data = editor.getData();
-        field.onChange(data);
-      }}
+    <Editor
+      tools={[
+        [Bold, Italic, Underline],
+        [Undo, Redo],
+        [Link, Unlink],
+        [AlignLeft, AlignCenter, AlignRight],
+        [OrderedList, UnorderedList, Indent, Outdent]
+      ]}
+      contentStyle={{ height: 320 }}
+      onChange={onChange}
+      defaultContent={field.value}
     />
+    // <textarea onChange={field.onChange} value={field.value} name={field.name} />
   );
 }

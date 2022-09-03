@@ -3,7 +3,6 @@ import Form from "./Form";
 import useYupValidationResolver, {
   validationSchema
 } from "./Form/useYupValidationResolver";
-import "./styles.css";
 import { dataSchema, data } from "./TestForm/formData";
 
 export default function App() {
