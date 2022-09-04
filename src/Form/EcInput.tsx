@@ -41,10 +41,10 @@ export default function EcInput(props) {
           valid={!invalid && isSubmitted}
         />
         <FormFeedback tooltip valid style={{ position: "static" }}>
-          Sweet! that name is available
+          Sweet!
         </FormFeedback>
         <FormFeedback tooltip style={{ position: "static" }}>
-          Oh noes! that name is already taken!
+          Oh noes!
         </FormFeedback>
         <FormText>Example help text that remains unchanged.</FormText>
       </FormGroup>

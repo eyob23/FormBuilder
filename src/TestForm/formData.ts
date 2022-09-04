@@ -7,7 +7,7 @@ export interface FormData {
   showFood: string;
   food: Array<string>;
   color: string;
-  showDetialDescription: boolean;
+  showDetialDescription: boolean | null | undefined;
   detialDescription: string;
   // country: string;
   fullName: {
@@ -190,6 +190,7 @@ export const data: FormData = {
   showFood: "",
   food: ["salad", "pasta"],
   color: "",
+  showDetialDescription: null,
   detialDescription: "This is more information",
   fullName: {
     firstName: "object first name",

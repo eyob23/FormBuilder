@@ -41,13 +41,9 @@ export default function EcCheckBox(props) {
               //onChange={onChange} // send value to hook form
               onChange={(e) => {
                 if (e.target.checked) {
-                  onChange([
-                    ...new Set([
-                      ...(value || []),
-                      e.target.value,
-                      e.target.value
-                    ])
-                  ]);
+                  onChange(
+                    Array.from(new Set([...(value || []), e.target.value]))
+                  );
                 } else {
                   onChange(value.filter((v) => v !== e.target.value));
                 }
@@ -63,13 +59,15 @@ export default function EcCheckBox(props) {
           </FormGroup>
         ))}
         <div
-          className={invalid ? "is-invalid" : isSubmitted ? "is-valid" : null}
+          className={
+            invalid ? "is-invalid" : isSubmitted ? "is-valid" : undefined
+          }
         ></div>
         <FormFeedback tooltip valid style={{ position: "static" }}>
-          Sweet! that name is available
+          Sweet!
         </FormFeedback>
         <FormFeedback tooltip style={{ position: "static" }}>
-          Oh noes! that name is already taken!
+          Oh noes!
         </FormFeedback>
         <FormText>Example help text that remains unchanged.</FormText>
       </FormGroup>

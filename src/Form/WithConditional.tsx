@@ -26,13 +26,13 @@ export default function WithConditional({
         condition.ShouldPreserveHistory &&
         ref.current
       ) {
-        setValue(fieldName, ref.current);
+        setValue(fieldName, ref.current, { shouldValidate: true });
         ref.current = undefined;
       }
     } else {
       if (condition.ShouldClearValue && watchFieldValue != null) {
         ref.current = watchFieldValue;
-        setValue(fieldName, null);
+        setValue(fieldName, null, { shouldValidate: true });
       }
     }
   }, [
