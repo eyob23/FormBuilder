@@ -74,7 +74,7 @@ export default function EcFieldArray(props: any) {
               }),
               {}
             );
-            console.log("newObj", newObj);
+            //console.log("newObj", newObj);
             append(newObj);
           }}
         >

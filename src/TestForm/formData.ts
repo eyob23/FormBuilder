@@ -7,6 +7,7 @@ export interface FormData {
   showFood: string;
   food: Array<string>;
   color: string;
+  showDetialDescription: boolean;
   detialDescription: string;
   // country: string;
   fullName: {
@@ -80,7 +81,24 @@ export const dataSchema: FieldItem[] = [
     option: ["red", "green", "black"]
   },
   { label: "Description", name: "description", type: "textArea" },
-  { label: "Description", name: "detialDescription", type: "editor" },
+  {
+    label: "Show Detial Description",
+    name: "showDetialDescription",
+    type: "radio",
+    option: ["Yes", "No"]
+  },
+  {
+    label: "Description",
+    name: "detialDescription",
+    type: "editor",
+    condition: {
+      when: "showDetialDescription",
+      value: "Yes",
+      then: "show",
+      ShouldClearValue: true,
+      ShouldPreserveHistory: true
+    }
+  },
 
   {
     label: "fullName",

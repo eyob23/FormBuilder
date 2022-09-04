@@ -46,7 +46,6 @@ export default function EcField(props: any) {
         ShowField = <div key={"default"}>invalid form type {type}</div>;
         break;
     }
-    console.log(condition ? true : false);
     const Field = condition ? (
       <WithConditional {...props}>{ShowField}</WithConditional>
     ) : (

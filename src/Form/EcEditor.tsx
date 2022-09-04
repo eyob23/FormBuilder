@@ -53,7 +53,7 @@ export default function EcEditor(props: any) {
       ]}
       contentStyle={{ height: 320 }}
       onChange={onChange}
-      defaultContent={field.value}
+      defaultContent={field.value || undefined}
     />
     // <textarea onChange={field.onChange} value={field.value} name={field.name} />
   );

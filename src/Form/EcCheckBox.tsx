@@ -42,7 +42,11 @@ export default function EcCheckBox(props) {
               onChange={(e) => {
                 if (e.target.checked) {
                   onChange([
-                    ...new Set([...value, e.target.value, e.target.value])
+                    ...new Set([
+                      ...(value || []),
+                      e.target.value,
+                      e.target.value
+                    ])
                   ]);
                 } else {
                   onChange(value.filter((v) => v !== e.target.value));

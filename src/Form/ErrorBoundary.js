@@ -16,7 +16,7 @@ class ErrorBoundary extends React.Component {
       errorInfo: errorInfo
     });
     // You can also log error messages to an error reporting service here
-    console.log(errorInfo, error);
+    //console.log(errorInfo, error);
   }
 
   render() {

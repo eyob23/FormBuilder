@@ -7,7 +7,7 @@ import { dataSchema, data } from "./TestForm/formData";
 
 export default function App() {
   const onSubmit = (data: FormData) => console.log(data);
-  const numberOfForms = 1;
+  const numberOfForms = 5;
   return (
     <div style={{ margin: "2rem" }}>
       <h1>Form Builder from JSON</h1>
