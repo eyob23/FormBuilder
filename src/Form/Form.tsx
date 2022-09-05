@@ -77,7 +77,8 @@ export default function EcForm({
   onSubmit,
   dataSchema,
   useValidationResolver,
-  validationSchema
+  validationSchema,
+  id
 }: any) {
   const resolver = useValidationResolver(validationSchema);
   const methods = useForm({
@@ -90,10 +91,11 @@ export default function EcForm({
   return (
     <>
       <button type="button" onClick={() => setIsDisabled(!disabled)}>
-        Toggle disabled {disabled ? "Disabled" : "Enabled"}
+        Toggle disabled for form:{id} {disabled ? "Disabled" : "Enabled"}
       </button>
       <button type="button" onClick={() => setReadonly(!readOnly)}>
-        Toggle read/Edit mode {readOnly ? "Readonly mode" : "Edit mode"}
+        Toggle read/Edit mode for form:{id}{" "}
+        {readOnly ? "Readonly mode" : "Edit mode"}
       </button>
       <Container fluid className="bg-light border">
         <Row>

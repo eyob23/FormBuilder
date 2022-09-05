@@ -15,7 +15,7 @@ interface FieldItem {
   taggleable?: boolean;
   condition?: {
     when: string;
-    value: boolean | string | number;
+    value: boolean | string | number | any[] | object;
     then: "show" | "hide"; //default show
     else?: "show" | "hide"; //default hide
     ShouldClearValue: boolean;

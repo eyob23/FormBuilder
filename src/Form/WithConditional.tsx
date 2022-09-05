@@ -1,17 +1,18 @@
 import { useRef, useEffect } from "react";
 import { useWatch, UseFormReturn } from "react-hook-form";
 import { isEqual } from "lodash";
+import FieldItem from "../interface/fieldItem";
 type Props = {
   children: React.ReactNode;
   methods: UseFormReturn<any, object>;
-  schema: any;
+  schema: FieldItem;
 };
 export default function WithConditional({
   children,
   methods: { control, setValue },
   schema
 }: Props) {
-  const condition = schema.condition;
+  const condition = schema.condition!;
   const fieldName = schema.name;
   const [watchedValue, watchFieldValue] = useWatch({
     control,

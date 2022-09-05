@@ -57,7 +57,7 @@ export const validationSchema = yup.object({
 });
 const useYupValidationResolver = (validationSchema) => {
   return useCallback(
-    async (data) => {
+    async (data: FormData) => {
       //console.log("data", data);
       try {
         const values = await validationSchema.validate(data, {
@@ -69,7 +69,7 @@ const useYupValidationResolver = (validationSchema) => {
           errors: {}
         };
       } catch (e) {
-        console.log("errors", e);
+        //console.log("errors", e);
         return {
           values: {},
           errors: e.inner?.reduce
