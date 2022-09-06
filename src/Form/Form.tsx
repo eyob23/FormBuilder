@@ -99,7 +99,7 @@ export default function EcForm({
       </button>
       <Container fluid className="bg-light border">
         <Row>
-          <Col className="bg-light border">
+          <Col xs="8" className="bg-light border">
             <form onSubmit={handleSubmit(onSubmit)}>
               <EcFields
                 dataSchema={dataSchema}
@@ -119,7 +119,7 @@ export default function EcForm({
               )}
             </form>
           </Col>
-          <Col className="bg-light border">
+          <Col xs="4" className="bg-light border">
             <FormState {...methods} />
             <EcErrorCounter resolver={resolver} control={control} />
           </Col>
