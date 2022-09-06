@@ -44,42 +44,48 @@ export default function EcFieldArray(props: any) {
               />
             </CardBody>
             <CardFooter>
-              <Button
-                type="button"
-                color="danger"
-                onClick={() => remove(index)}
-              >
-                Delete {name}
-              </Button>
+              {!rest.readOnly && (
+                <Button
+                  type="button"
+                  color="danger"
+                  disabled={rest.disabled}
+                  onClick={() => remove(index)}
+                >
+                  Delete {name}
+                </Button>
+              )}
             </CardFooter>
           </Card>
         ))}
       </CardBody>
       <CardFooter>
         {/* {console.log("listOfFieldItems", listOfFieldItems)} */}
-        <Button
-          type="button"
-          className="float-end"
-          onClick={() => {
-            //set default value using schema name prop(shallow copy)
-            const newObj = listOfFieldItems.reduce(
-              (acc: any, obj: any) => ({
-                ...acc,
-                [obj.name]:
-                  obj.type === "listOfFieldItems"
-                    ? [] //todo: recursive call to array if needed?
-                    : obj.type === "object"
-                    ? {} //todo: recursive call to object if needed?
-                    : ""
-              }),
-              {}
-            );
-            //console.log("newObj", newObj);
-            append(newObj);
-          }}
-        >
-          Add new {name}
-        </Button>
+        {!rest.readOnly && (
+          <Button
+            type="button"
+            className="float-end"
+            disabled={rest.disabled}
+            onClick={() => {
+              //set default value using schema name prop(shallow copy)
+              const newObj = listOfFieldItems.reduce(
+                (acc: any, obj: any) => ({
+                  ...acc,
+                  [obj.name]:
+                    obj.type === "listOfFieldItems"
+                      ? [] //todo: recursive call to array if needed?
+                      : obj.type === "object"
+                      ? {} //todo: recursive call to object if needed?
+                      : ""
+                }),
+                {}
+              );
+              //console.log("newObj", newObj);
+              append(newObj);
+            }}
+          >
+            Add new {name}
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

@@ -86,8 +86,8 @@ export default function EcForm({
     resolver
   });
   const { handleSubmit, control } = methods;
-  const [disabled, setIsDisabled] = useState<boolean | null>(null);
-  const [readOnly, setReadonly] = useState<boolean | null>(null);
+  const [disabled, setIsDisabled] = useState<boolean | undefined>(undefined);
+  const [readOnly, setReadonly] = useState<boolean | undefined>(undefined);
   return (
     <>
       <button type="button" onClick={() => setIsDisabled(!disabled)}>
@@ -107,9 +107,16 @@ export default function EcForm({
                 disabled={disabled}
                 readOnly={readOnly}
               />
-              <Button type="submit" variant="contained" color="primary">
-                Submit
-              </Button>
+              {!readOnly && (
+                <Button
+                  disabled={disabled}
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                >
+                  Submit
+                </Button>
+              )}
             </form>
           </Col>
           <Col className="bg-light border">

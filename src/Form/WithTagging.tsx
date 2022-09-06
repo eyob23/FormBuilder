@@ -1,6 +1,6 @@
 import EcSelect from "./EcSelect";
 export default function WithTagging(props) {
-  const { children, methods, schema } = props;
+  const { children, methods, schema, ...rest } = props;
   const tagValues = [
     "primary",
     "secondary",
@@ -13,14 +13,14 @@ export default function WithTagging(props) {
   ];
   const tagSchema = {
     label: "Tag",
-    name: `tag-${schema.name}`,
+    name: `tag.${schema.name}`,
     type: "select",
     option: tagValues
   };
 
   return (
     <div>
-      <EcSelect schema={tagSchema} methods={methods} />
+      <EcSelect schema={tagSchema} methods={methods} {...rest} />
       {children}
     </div>
   );
