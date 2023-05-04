@@ -5,7 +5,7 @@ yup.addMethod(yup.array, "arrayNumber", function (errorMessage) {
   return this.test(`array-number`, errorMessage, function (value) {
     const { path, createError } = this;
 
-    return value?.length > 0 || createError({ path, message: errorMessage });
+    return value && value?.length > 0 || createError({ path, message: errorMessage });
   });
 });
 export const validationSchema = yup.object({
@@ -31,7 +31,7 @@ export const validationSchema = yup.object({
     .nullable()
     .when("showFood", {
       is: "show",
-      then: yup.array().arrayNumber("Required at least one food iteam")
+      then: yup.array()//.arrayNumber("Required at least one food iteam")
     }),
 
   nested: yup.array().of(
@@ -41,7 +41,7 @@ export const validationSchema = yup.object({
       sex: yup.string().required("Required"),
       description: yup.string().required("Required"),
       color: yup.string().required("Required"),
-      food: yup.array().arrayNumber("Required at least one food iteam"),
+      food: yup.array(),//.arrayNumber("Required at least one food iteam"),
       nested2: yup.array().of(
         yup.object({
           firstName: yup.string().required("Required"),
@@ -49,13 +49,13 @@ export const validationSchema = yup.object({
           sex: yup.string().required("Required"),
           description: yup.string().required("Required"),
           color: yup.string().required("Required"),
-          food: yup.array().arrayNumber("Required at least one food iteam")
+          food: yup.array()//.arrayNumber("Required at least one food iteam")
         })
       )
     })
   )
 });
-const useYupValidationResolver = (validationSchema) => {
+const useYupValidationResolver = (validationSchema:any) => {
   return useCallback(
     async (data: FormData) => {
       //console.log("data", data);
@@ -68,13 +68,14 @@ const useYupValidationResolver = (validationSchema) => {
           values,
           errors: {}
         };
-      } catch (e) {
+      } catch (error) {
         //console.log("errors", e);
+        const e:any= error;
         return {
           values: {},
           errors: e.inner?.reduce
             ? e.inner.reduce(
-                (allErrors, currentError) => ({
+                (allErrors:any, currentError:any) => ({
                   ...allErrors,
                   [currentError.path
                     .replaceAll("[", ".")

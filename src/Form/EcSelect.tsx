@@ -1,6 +1,6 @@
 import { useController } from "react-hook-form";
 import { Input, FormGroup, FormFeedback, FormText, Label } from "reactstrap";
-export default function EcSelect(props) {
+export default function EcSelect(props:any) {
   const {
     methods: { control },
     schema,
@@ -35,7 +35,7 @@ export default function EcSelect(props) {
         invalid={invalid}
         valid={!invalid && isSubmitted}
       >
-        {schema.option.map((opt) => (
+        {schema.option.map((opt:any) => (
           <option key={"select-" + opt}>{opt}</option>
         ))}
       </Input>

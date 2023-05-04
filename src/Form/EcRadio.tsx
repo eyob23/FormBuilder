@@ -1,7 +1,7 @@
 import React from "react";
 import { useController } from "react-hook-form";
 import { Input, FormGroup, FormFeedback, FormText, Label } from "reactstrap";
-export default function EcRadio(props) {
+export default function EcRadio(props:any) {
   const {
     methods: { control },
     schema,
@@ -26,7 +26,7 @@ export default function EcRadio(props) {
     <>
       <FormGroup tag="fieldset">
         <legend className="fs-6">{schema.label}</legend>
-        {schema.option.map((opt) => (
+        {schema.option.map((opt:any) => (
           <FormGroup check key={"radio-" + opt} inline>
             <Label htmlFor={name} check>
               {opt}
@@ -46,7 +46,7 @@ export default function EcRadio(props) {
           </FormGroup>
         ))}
         <div
-          className={invalid ? "is-invalid" : isSubmitted ? "is-valid" : null}
+          className={invalid ? "is-invalid" : isSubmitted ? "is-valid" : undefined}
         ></div>
         <FormFeedback tooltip valid style={{ position: "static" }}>
           Sweet!

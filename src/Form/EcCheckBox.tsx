@@ -1,7 +1,7 @@
 import React from "react";
 import { useController } from "react-hook-form";
 import { Input, FormGroup, FormFeedback, FormText, Label } from "reactstrap";
-export default function EcCheckBox(props) {
+export default function EcCheckBox(props:any) {
   const {
     methods: { control },
     schema,
@@ -29,7 +29,7 @@ export default function EcCheckBox(props) {
     <>
       <FormGroup tag="fieldset">
         <legend className="fs-6">{schema.label}</legend>
-        {schema.option.map((opt) => (
+        {schema.option.map((opt:any) => (
           <FormGroup check key={"check-" + opt} inline>
             <Label htmlFor={name} check>
               {opt}
@@ -45,7 +45,7 @@ export default function EcCheckBox(props) {
                     Array.from(new Set([...(value || []), e.target.value]))
                   );
                 } else {
-                  onChange(value.filter((v) => v !== e.target.value));
+                  onChange(value.filter((v:any) => v !== e.target.value));
                 }
               }}
               onBlur={onBlur} // notify when input is touched/blur

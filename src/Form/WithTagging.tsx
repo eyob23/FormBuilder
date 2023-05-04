@@ -1,5 +1,5 @@
 import EcSelect from "./EcSelect";
-export default function WithTagging(props) {
+export default function WithTagging(props:any) {
   const { children, methods, schema, ...rest } = props;
   const tagValues = [
     "primary",

@@ -1,7 +1,7 @@
 import React from "react";
 import { useController } from "react-hook-form";
 import { Input, FormGroup, FormFeedback, FormText, Label } from "reactstrap";
-export default function EcInput(props) {
+export default function EcInput(props:any) {
   const {
     methods: { control },
     schema,
